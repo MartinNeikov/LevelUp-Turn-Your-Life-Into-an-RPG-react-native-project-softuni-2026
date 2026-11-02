@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import WelcomeScreen from "./components/welcome-screen/WelcomeScreen";
+
 
 export default function App() {
   return (
-    <View >
-      <Text style = {{textAlign: "center", marginTop: 100 , fontSize: 25}}>LevelUp-Turn-Your-Life-Into-an-RPG</Text>
-    </View>
+    <SafeAreaProvider>
+      <StatusBar style="light" />
+      <WelcomeScreen />
+    </SafeAreaProvider>
   );
 }
-
-
