@@ -1,5 +1,6 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AppButton from "../app-button/AppButton";
 
 export default function WelcomeScreen() {
   return (
@@ -12,29 +13,18 @@ export default function WelcomeScreen() {
       </Text>
 
       <View style={styles.actions}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            styles.primaryButton,
-            pressed && styles.buttonPressed,
-          ]}
+        <AppButton
+          title="Create Account"
           onPress={() =>
             Alert.alert("Register", "Your adventure starts soon!")
           }
-        >
-          <Text style={styles.primaryButtonText}>Create Account</Text>
-        </Pressable>
+        />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            styles.secondaryButton,
-            pressed && styles.buttonPressed,
-          ]}
+        <AppButton
+          title="Login"
+          variant="secondary"
           onPress={() => Alert.alert("Login", "Welcome back, adventurer!")}
-        >
-          <Text style={styles.secondaryButtonText}>Login</Text>
-        </Pressable>
+        />
       </View>
     </SafeAreaView>
   );
@@ -72,33 +62,5 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     marginTop: 32,
     gap: 12,
-  },
-  button: {
-    minHeight: 52,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButton: {
-    backgroundColor: "#A78BFA",
-  },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: "#A78BFA",
-  },
-  primaryButtonText: {
-    color: "#12121F",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  secondaryButtonText: {
-    color: "#A78BFA",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  buttonPressed: {
-    opacity: 0.7,
   },
 });
