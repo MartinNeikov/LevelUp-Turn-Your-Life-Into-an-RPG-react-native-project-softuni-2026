@@ -4,16 +4,19 @@ export default function AppButton({
   title,
   onPress,
   variant = "primary",
+  disabled = false,
 }) {
   const isSecondary = variant === "secondary";
 
   return (
     <Pressable
       accessibilityRole="button"
+      disabled={disabled}
       style={({ pressed }) => [
         styles.button,
         isSecondary ? styles.secondaryButton : styles.primaryButton,
         pressed && styles.buttonPressed,
+        disabled && styles.buttonDisabled,
       ]}
       onPress={onPress}
     >
@@ -57,5 +60,8 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     opacity: 0.7,
+  },
+  buttonDisabled: {
+    opacity: 0.4,
   },
 });
