@@ -1,28 +1,11 @@
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import AppButton from "../app-button/AppButton";
 import AppInput from "../app-input/AppInput";
+import AuthLayout from "../auth-layout/AuthLayout";
 
 export default function RegisterScreen() {
-  return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.form}>
+  return (   
+          <AuthLayout>
             <Text style={styles.title}>Create your account</Text>
 
             <Text style={styles.subtitle}>
@@ -68,31 +51,10 @@ export default function RegisterScreen() {
                 }
               />
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+          </AuthLayout>)        
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#12121F",
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  form: {
-    width: "100%",
-    maxWidth: 360,
-  },
+const styles = StyleSheet.create({ 
   title: {
     color: "#A78BFA",
     fontSize: 32,
