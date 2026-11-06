@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { StyleSheet, Text, Alert } from "react-native";
-import AuthLayout from "../auth-layout/AuthLayout";
-import AttributeCard from "../attribute-card/AttributeCard";
-import AppButton from "../app-button/AppButton";
+import AuthLayout from "../../components/auth-layout/AuthLayout";
+import AttributeCard from "../../components/attribute-card/AttributeCard";
+import AppButton from "../../components/app-button/AppButton";
 
-export default function ChoosePathScreen() {
+export default function ChoosePathScreen({ navigation }) {
   const [isStrengthFocused, setIsStrengthFocused] = useState(false);
   const [isIntelligenceFocused, setIsIntelligenceFocused] = useState(false);
   const [isDisciplineFocused, setIsDisciplineFocused] = useState(false);
@@ -80,9 +80,7 @@ export default function ChoosePathScreen() {
       <AppButton
         title="Continue"
         disabled={selectedCount < 2 || selectedCount > 3}
-        onPress={() =>
-          Alert.alert("Choose Your Path", "Your priorities are selected!")
-        }
+        onPress={() => navigation.navigate("Home")}
       />
     </AuthLayout>
   );

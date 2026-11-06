@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
-import AppButton from "../app-button/AppButton";
-import AppInput from "../app-input/AppInput";
-import AuthLayout from "../auth-layout/AuthLayout";
+import AppButton from "../../components/app-button/AppButton";
+import AppInput from "../../components/app-input/AppInput";
+import AuthLayout from "../../components/auth-layout/AuthLayout";
 
 export default function LoginScreen() {
   return (

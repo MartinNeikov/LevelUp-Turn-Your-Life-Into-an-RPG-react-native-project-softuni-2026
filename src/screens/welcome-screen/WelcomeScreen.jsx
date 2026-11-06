@@ -1,8 +1,8 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AppButton from "../app-button/AppButton";
+import AppButton from "../../components/app-button/AppButton";
 
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>LevelUp</Text>
@@ -15,15 +15,13 @@ export default function WelcomeScreen() {
       <View style={styles.actions}>
         <AppButton
           title="Create Account"
-          onPress={() =>
-            Alert.alert("Register", "Your adventure starts soon!")
-          }
+          onPress={() => navigation.navigate("Register")}
         />
 
         <AppButton
           title="Login"
           variant="secondary"
-          onPress={() => Alert.alert("Login", "Welcome back, adventurer!")}
+          onPress={() => navigation.navigate("Login")}
         />
       </View>
     </SafeAreaView>
