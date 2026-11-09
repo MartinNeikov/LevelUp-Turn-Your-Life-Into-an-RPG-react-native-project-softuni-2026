@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, Alert } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import AuthLayout from "../../components/auth-layout/AuthLayout";
 import AttributeCard from "../../components/attribute-card/AttributeCard";
 import AppButton from "../../components/app-button/AppButton";
@@ -12,14 +12,19 @@ export default function ChoosePathScreen({ navigation }) {
   const [isCharismaFocused, setIsCharismaFocused] = useState(false);
   const [isCreativityFocused, setIsCreativityFocused] = useState(false);
 
-  const selectedCount = [
-    isStrengthFocused,
-    isIntelligenceFocused,
-    isDisciplineFocused,
-    isEnduranceFocused,
-    isCharismaFocused,
-    isCreativityFocused,
-  ].filter(Boolean).length;
+  const selectedAttributes = Object.entries({
+    Strength: isStrengthFocused,
+    Intelligence: isIntelligenceFocused,
+    Discipline: isDisciplineFocused,
+    Endurance: isEnduranceFocused,
+    Charisma: isCharismaFocused,
+    Creativity: isCreativityFocused,
+  })
+    .filter(([, isFocused]) => isFocused)
+    .map(([name]) => name);
+
+  const selectedCount = selectedAttributes.length;
+
 
   return (
     <AuthLayout>
@@ -80,7 +85,7 @@ export default function ChoosePathScreen({ navigation }) {
       <AppButton
         title="Continue"
         disabled={selectedCount < 2 || selectedCount > 3}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate("Home", { selectedAttributes })}
       />
     </AuthLayout>
   );
