@@ -1,10 +1,20 @@
 import { StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AppButton from "../../components/app-button/AppButton";
 
-export default function QuestsScreen() {
+export default function QuestsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <Text style={styles.title}>Quests</Text>
+      <AppButton
+        title="Walk for 10 minutes"
+        onPress={() =>
+          navigation.navigate("QuestDetails", {
+            questId: "walk-10",
+            title: "Walk for 10 minutes",
+          })
+        }
+      />
     </SafeAreaView>
   );
 }

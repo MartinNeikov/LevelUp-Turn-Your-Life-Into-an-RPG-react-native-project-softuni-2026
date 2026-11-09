@@ -5,6 +5,7 @@ import WelcomeScreen from "../screens/welcome-screen/WelcomeScreen";
 import LoginScreen from "../screens/login-screen/LoginScreen";
 import RegisterScreen from "../screens/register-screen/RegisterScreen";
 import ChoosePathScreen from "../screens/choose-path-screen/ChoosePathScreen";
+import QuestDetailsScreen from "../screens/quest-details-screen/QuestDetailsScreen";
 import MainTabNavigator from "./MainTabNavigator";
 
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="ChoosePath" component={ChoosePathScreen} />
         <Stack.Screen name="Home" component={MainTabNavigator} />
+        <Stack.Screen name="QuestDetails" component={QuestDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
