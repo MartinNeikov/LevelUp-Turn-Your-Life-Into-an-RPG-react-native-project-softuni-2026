@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
+
 import AuthLayout from "../../components/auth-layout/AuthLayout";
 import AttributeCard from "../../components/attribute-card/AttributeCard";
 import AppButton from "../../components/app-button/AppButton";
+import { supabase } from "../../lib/supabase";
 
 export default function ChoosePathScreen({ navigation }) {
   const [isStrengthFocused, setIsStrengthFocused] = useState(false);
@@ -11,6 +13,7 @@ export default function ChoosePathScreen({ navigation }) {
   const [isEnduranceFocused, setIsEnduranceFocused] = useState(false);
   const [isCharismaFocused, setIsCharismaFocused] = useState(false);
   const [isCreativityFocused, setIsCreativityFocused] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const selectedAttributes = Object.entries({
     Strength: isStrengthFocused,
@@ -24,7 +27,37 @@ export default function ChoosePathScreen({ navigation }) {
     .map(([name]) => name);
 
   const selectedCount = selectedAttributes.length;
+  const canContinue = selectedCount >= 2 && selectedCount <= 3;
 
+  async function handleContinue() {
+    if (!canContinue || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          focus_attributes: selectedAttributes,
+        },
+      });
+
+      if (error) {
+        Alert.alert("Could not save your choices", error.message);
+        return;
+      }
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home", params: { selectedAttributes } }],
+      });
+    } catch {
+      Alert.alert("Could not save your choices", "Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <AuthLayout>
@@ -42,28 +75,31 @@ export default function ChoosePathScreen({ navigation }) {
         description="Fitness, sports, and movement"
         value={isStrengthFocused}
         onValueChange={setIsStrengthFocused}
-        disabled={selectedCount >= 3 && !isStrengthFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isStrengthFocused)}
       />
+
       <AttributeCard
         title="Intelligence"
         description="Learning, reading, and new skills"
         value={isIntelligenceFocused}
         onValueChange={setIsIntelligenceFocused}
-        disabled={selectedCount >= 3 && !isIntelligenceFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isIntelligenceFocused)}
       />
+
       <AttributeCard
         title="Discipline"
         description="Habits, consistency, and productivity"
         value={isDisciplineFocused}
         onValueChange={setIsDisciplineFocused}
-        disabled={selectedCount >= 3 && !isDisciplineFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isDisciplineFocused)}
       />
+
       <AttributeCard
         title="Endurance"
         description="Stamina, walking, and sustained activity"
         value={isEnduranceFocused}
         onValueChange={setIsEnduranceFocused}
-        disabled={selectedCount >= 3 && !isEnduranceFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isEnduranceFocused)}
       />
 
       <AttributeCard
@@ -71,7 +107,7 @@ export default function ChoosePathScreen({ navigation }) {
         description="Communication and social skills"
         value={isCharismaFocused}
         onValueChange={setIsCharismaFocused}
-        disabled={selectedCount >= 3 && !isCharismaFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isCharismaFocused)}
       />
 
       <AttributeCard
@@ -79,13 +115,13 @@ export default function ChoosePathScreen({ navigation }) {
         description="Art, imagination, and creative projects"
         value={isCreativityFocused}
         onValueChange={setIsCreativityFocused}
-        disabled={selectedCount >= 3 && !isCreativityFocused}
+        disabled={isSaving || (selectedCount >= 3 && !isCreativityFocused)}
       />
 
       <AppButton
-        title="Continue"
-        disabled={selectedCount < 2 || selectedCount > 3}
-        onPress={() => navigation.navigate("Home", { selectedAttributes })}
+        title={isSaving ? "Saving..." : "Continue"}
+        disabled={!canContinue || isSaving}
+        onPress={handleContinue}
       />
     </AuthLayout>
   );

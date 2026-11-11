@@ -11,7 +11,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleLogin() {
+  async function loginHandler() {
     if (isSubmitting) {
       return;
     }
@@ -19,14 +19,17 @@ export default function LoginScreen({ navigation }) {
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail || !password) {
-      Alert.alert("Missing information", "Please enter your email and password.");
+      Alert.alert(
+        "Missing information",
+        "Please enter your email and password.",
+      );
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: trimmedEmail,
         password,
       });
@@ -36,7 +39,19 @@ export default function LoginScreen({ navigation }) {
         return;
       }
 
-      navigation.replace("ChoosePath");
+      const selectedAttributes = data.user?.user_metadata?.focus_attributes;
+      const hasChosenPath =
+        Array.isArray(selectedAttributes) &&
+        (selectedAttributes.length === 2 || selectedAttributes.length === 3);
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          hasChosenPath
+            ? { name: "Home", params: { selectedAttributes } }
+            : { name: "ChoosePath" },
+        ],
+      });
     } catch {
       Alert.alert("Login failed", "Please try again.");
     } finally {
@@ -72,7 +87,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.actions}>
         <AppButton
           title={isSubmitting ? "Logging in..." : "Login"}
-          onPress={handleLogin}
+          onPress={loginHandler}
           disabled={isSubmitting}
         />
       </View>
