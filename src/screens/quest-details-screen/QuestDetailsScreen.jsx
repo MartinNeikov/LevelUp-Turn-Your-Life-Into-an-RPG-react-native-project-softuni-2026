@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View} from "react-native";
+import { ScrollView, StyleSheet, Text, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getQuestById } from "../../services/questService";
+import AppButton from "../../components/app-button/AppButton";
+import {
+  completeDailyQuest,
+  getDailyQuestStatus,
+  getQuestById,
+} from "../../services/questService";
 
 export default function QuestDetailsScreen({ route }) {
   const questId = route.params?.questId;
+  const questDate = route.params?.questDate;
+  const [dailyQuest, setDailyQuest] = useState(null);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [quest, setQuest] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -16,12 +24,17 @@ export default function QuestDetailsScreen({ route }) {
       setIsLoading(true);
       setErrorMessage("");
       setQuest(null);
+      setDailyQuest(null);
 
       try {
-        const data = questId ? await getQuestById(questId) : null;
+        const [questData, dailyQuestData] = await Promise.all([
+          questId ? getQuestById(questId) : null,
+          questId && questDate ? getDailyQuestStatus(questId, questDate) : null,
+        ]);
 
         if (isActive) {
-          setQuest(data);
+          setQuest(questData);
+          setDailyQuest(dailyQuestData);
         }
       } catch (error) {
         if (isActive) {
@@ -40,7 +53,23 @@ export default function QuestDetailsScreen({ route }) {
     return () => {
       isActive = false;
     };
-  }, [questId]);
+  }, [questId, questDate]);
+  async function handleCompleteQuest() {
+    if (!dailyQuest || dailyQuest.completed_at || isCompleting) {
+      return;
+    }
+
+    setIsCompleting(true);
+
+    try {
+      const completedAt = await completeDailyQuest(questId, questDate);
+      setDailyQuest({ completed_at: completedAt });
+    } catch (error) {
+      Alert.alert("Could not complete quest", error.message);
+    } finally {
+      setIsCompleting(false);
+    }
+  }
 
   let target = "";
 
@@ -78,6 +107,17 @@ export default function QuestDetailsScreen({ route }) {
                 <Text style={styles.goalValue}>{target}</Text>
               </View>
             )}
+            {dailyQuest?.completed_at ? (
+              <Text style={styles.text}>Completed</Text>
+            ) : dailyQuest &&
+              quest.target_type == null &&
+              quest.target_value == null ? (
+              <AppButton
+                title={isCompleting ? "Completing..." : "Complete Quest"}
+                onPress={handleCompleteQuest}
+                disabled={isCompleting}
+              />
+            ) : null}
 
             <View style={styles.badges}>
               <Text style={styles.badge}>{quest.attribute}</Text>

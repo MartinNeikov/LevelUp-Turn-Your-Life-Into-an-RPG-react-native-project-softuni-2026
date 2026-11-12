@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AppButton from "../../components/app-button/AppButton";
-import { getQuests } from "../../services/questService";
+import { getDailyQuests } from "../../services/questService";
 
 export default function QuestsScreen({ navigation }) {
   const [quests, setQuests] = useState([]);
@@ -15,7 +15,7 @@ export default function QuestsScreen({ navigation }) {
     setErrorMessage("");
 
     try {
-      const data = await getQuests();
+      const data = await getDailyQuests();
       setQuests(data);
     } catch (error) {
       console.error("Failed to load quests:", error);
@@ -30,7 +30,7 @@ export default function QuestsScreen({ navigation }) {
     loadQuests();
   }, [loadQuests]);
 
-  function handleRefresh() {
+  function refreshHandler() {
     setIsRefreshing(true);
     loadQuests();
   }
@@ -48,9 +48,9 @@ export default function QuestsScreen({ navigation }) {
       {!isLoading && (
         <FlatList
           data={quests}
-          keyExtractor={(quest) => quest.id}
+          keyExtractor={(quest) => quest.quest_id}
           refreshing={isRefreshing}
-          onRefresh={handleRefresh}
+          onRefresh={refreshHandler}
           contentContainerStyle={styles.list}
           ListEmptyComponent={
             errorMessage ? null : (
@@ -63,7 +63,8 @@ export default function QuestsScreen({ navigation }) {
               variant="secondary"
               onPress={() =>
                 navigation.navigate("QuestDetails", {
-                  questId: item.id,
+                  questId: item.quest_id,
+                  questDate: item.quest_date,
                   title: item.title,
                 })
               }
