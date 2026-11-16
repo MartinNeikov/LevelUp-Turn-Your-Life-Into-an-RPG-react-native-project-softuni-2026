@@ -14,7 +14,9 @@ export async function getQuests() {
 export async function getQuestById(questId) {
   const { data, error } = await supabase
     .from("quests")
-    .select("id, title, description, attribute, xp, target_type, target_value")
+    .select(
+      "id, title, description, attribute, xp, target_type, target_value, owner_id, started_at, completed_at",
+    )
     .eq("id", questId)
     .single();
 
@@ -156,4 +158,67 @@ export async function getFinishedQuests() {
     attribute: quest?.attribute,
     xp: entry.xp_awarded,
   }));
+}
+
+export async function startPersonalQuest(questId) {
+  const { data, error } = await supabase.rpc("start_personal_quest", {
+    p_quest_id: questId,
+  });
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function completePersonalQuest(questId) {
+  const { data, error } = await supabase.rpc("complete_personal_quest", {
+    p_quest_id: questId,
+  });
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function updatePersonalQuest(
+  questId,
+  { title, description, attribute },
+) {
+  const { data, error } = await supabase
+    .from("quests")
+    .update({
+      title: title.trim(),
+      description: description.trim(),
+      attribute,
+    })
+    .eq("id", questId)
+    .not("owner_id", "is", null)
+    .is("started_at", null)
+    .is("completed_at", null)
+    .select("id")
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+    throw new Error("This quest is no longer available to edit.");
+  }
+}
+
+export async function deletePersonalQuest(questId) {
+  const { data, error } = await supabase
+    .from("quests")
+    .delete()
+    .eq("id", questId)
+    .not("owner_id", "is", null)
+    .is("started_at", null)
+    .is("completed_at", null)
+    .select("id")
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+    throw new Error("This quest is no longer available to delete.");
+  }
 }

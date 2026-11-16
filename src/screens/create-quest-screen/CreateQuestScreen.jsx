@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
 import AppButton from "../../components/app-button/AppButton";
 import AppInput from "../../components/app-input/AppInput";
 import AuthLayout from "../../layouts/auth-layout/AuthLayout";
-import { createPersonalQuest } from "../../services/questService";
+import {
+  createPersonalQuest,
+  updatePersonalQuest,
+} from "../../services/questService";
 
 const ATTRIBUTES = [
   "Strength",
@@ -16,37 +19,51 @@ const ATTRIBUTES = [
   "Creativity",
 ];
 
-export default function CreateQuestScreen({ navigation }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [attribute, setAttribute] = useState("");
+export default function CreateQuestScreen({ navigation, route }) {
+  const quest = route.params?.quest;
+  const isEditing = Boolean(quest?.id);
+  const [title, setTitle] = useState(quest?.title ?? "");
+  const [description, setDescription] = useState(quest?.description ?? "");
+  const [attribute, setAttribute] = useState(quest?.attribute ?? "");
   const [isSaving, setIsSaving] = useState(false);
+  const saving = useRef(false);
 
   const canSave = Boolean(
     title.trim() && description.trim() && ATTRIBUTES.includes(attribute),
   );
+  const saveLabel = isEditing ? "Save Changes" : "Save Quest";
 
   async function handleSave() {
-    if (!canSave || isSaving) return;
+    if (!canSave || saving.current) return;
 
+    saving.current = true;
     setIsSaving(true);
 
     try {
-      await createPersonalQuest({ title, description, attribute });
-      navigation.goBack();
+      const values = { title, description, attribute };
+
+      if (isEditing) {
+        await updatePersonalQuest(quest.id, values);
+      } else {
+        await createPersonalQuest(values);
+      }
+
+      if (navigation.isFocused()) {
+        navigation.goBack();
+      }
     } catch (error) {
-      Alert.alert(
-        "Could not save quest",
-        error.message || "Please try again.",
-      );
+      if (navigation.isFocused()) {
+        Alert.alert("Could not save quest", error.message || "Please try again.");
+      }
     } finally {
+      saving.current = false;
       setIsSaving(false);
     }
   }
 
   return (
     <AuthLayout>
-      <Text style={styles.title}>Create Quest</Text>
+      <Text style={styles.title}>{isEditing ? "Edit Quest" : "Create Quest"}</Text>
 
       <AppInput
         label="Title"
@@ -85,7 +102,7 @@ export default function CreateQuestScreen({ navigation }) {
       <Text style={styles.reward}>Reward: 10 XP</Text>
 
       <AppButton
-        title={isSaving ? "Saving..." : "Save Quest"}
+        title={isSaving ? "Saving..." : saveLabel}
         onPress={handleSave}
         disabled={!canSave || isSaving}
       />
