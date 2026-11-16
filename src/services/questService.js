@@ -6,50 +6,51 @@ export async function getQuests() {
     .select("id, title, description, attribute, xp, target_type, target_value")
     .order("title");
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   return data;
-};
+}
 
 export async function getQuestById(questId) {
   const { data, error } = await supabase
     .from("quests")
     .select("id, title, description, attribute, xp, target_type, target_value")
     .eq("id", questId)
-    .maybeSingle();
+    .single();
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   return data;
-};
+}
 
 export async function getDailyQuests() {
-  const { data: dailyQuests, error: dailyError } = await supabase.rpc(
-    "get_daily_quests",
-  );
+  const { data: dailyQuests, error: dailyError } =
+    await supabase.rpc("get_daily_quests");
 
   if (dailyError) throw dailyError;
   if (dailyQuests.length === 0) return [];
 
-  const questIds = dailyQuests.map((dailyQuest) => dailyQuest.quest_id);
+  const questIds = dailyQuests.map((entry) => entry.quest_id);
 
   const { data: quests, error: questsError } = await supabase
     .from("quests")
-    .select("id, title")
+    .select("id, title, attribute, xp")
     .in("id", questIds);
 
   if (questsError) throw questsError;
 
-  const titlesById = new Map(quests.map((quest) => [quest.id, quest.title]));
+  const questsById = new Map(quests.map((quest) => [quest.id, quest]));
 
-  return dailyQuests.map((dailyQuest) => ({
-    ...dailyQuest,
-    title: titlesById.get(dailyQuest.quest_id) ?? "Quest",
-  }));
+  return dailyQuests.map((entry) => {
+    const quest = questsById.get(entry.quest_id);
+
+    return {
+      ...entry,
+      title: quest?.title ?? "Quest",
+      attribute: quest?.attribute,
+      xp: quest?.xp,
+    };
+  });
 }
 
 export async function getDailyQuestStatus(questId, questDate) {
@@ -74,4 +75,85 @@ export async function completeDailyQuest(questId, questDate) {
   if (error) throw error;
 
   return data;
+}
+
+export async function createPersonalQuest({ title, description, attribute }) {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError) throw authError;
+
+  const user = authData.user;
+
+  if (!user) {
+    throw new Error("Sign in to create a quest.");
+  }
+
+  const { error } = await supabase.from("quests").insert({
+    title: title.trim(),
+    description: description.trim(),
+    attribute,
+    owner_id: user.id,
+    xp: 10,
+  });
+
+  if (error) throw error;
+}
+
+export async function getPersonalQuests() {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError) throw authError;
+
+  const user = authData.user;
+
+  if (!user) {
+    throw new Error("Sign in to view your quests.");
+  }
+
+  const { data, error } = await supabase
+    .from("quests")
+    .select("id, title, attribute, xp")
+    .eq("owner_id", user.id)
+    .order("title")
+    .order("id");
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function getFinishedQuests() {
+  const dateParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Sofia",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(new Date());
+
+  const { year, month, day } = Object.fromEntries(
+    dateParts.map(({ type, value }) => [type, value]),
+  );
+
+  const today = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  const firstDay = new Date(today);
+  firstDay.setUTCDate(firstDay.getUTCDate() - 6);
+
+  const { data, error } = await supabase
+    .from("daily_quests")
+    .select(
+      "quest_id, quest_date, completed_at, xp_awarded, quests(title, attribute)",
+    )
+    .not("completed_at", "is", null)
+    .gte("quest_date", firstDay.toISOString().slice(0, 10))
+    .lte("quest_date", today.toISOString().slice(0, 10))
+    .order("completed_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data.map(({ quests: quest, ...entry }) => ({
+    ...entry,
+    title: quest?.title ?? "Quest",
+    attribute: quest?.attribute,
+    xp: entry.xp_awarded,
+  }));
 }

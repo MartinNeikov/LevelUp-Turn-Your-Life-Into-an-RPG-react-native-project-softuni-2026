@@ -1,77 +1,162 @@
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AppButton from "../../components/app-button/AppButton";
-import { getDailyQuests } from "../../services/questService";
+import {
+  getDailyQuests,
+  getFinishedQuests,
+  getPersonalQuests,
+} from "../../services/questService";
+import QuestCard from "./QuestCard";
+import QuestTabs from "./QuestTabs";
+
+const SECTIONS = [
+  { id: "daily", label: "Daily Quests", empty: "You're all caught up." },
+  { id: "personal", label: "Personal Quests", empty: "No personal quests yet." },
+  {
+    id: "finished",
+    label: "Finished Quests",
+    empty: "No quests finished in the last 7 days.",
+  },
+];
 
 export default function QuestsScreen({ navigation }) {
-  const [quests, setQuests] = useState([]);
+  const [activeSection, setActiveSection] = useState(SECTIONS[0]);
+  const [quests, setQuests] = useState({
+    daily: [],
+    personal: [],
+    finished: [],
+  });
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const requestId = useRef(0);
 
   const loadQuests = useCallback(async () => {
-    setErrorMessage("");
+    const currentRequest = ++requestId.current;
 
-    try {
-      const data = await getDailyQuests();
-      setQuests(data);
-    } catch (error) {
-      console.error("Failed to load quests:", error);
-      setErrorMessage("Could not load quests. Pull down to try again.");
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
+    const results = await Promise.allSettled([
+      getDailyQuests(),
+      getPersonalQuests(),
+      getFinishedQuests(),
+    ]);
+
+    if (currentRequest !== requestId.current) return;
+
+    const loadedQuests = {};
+    const nextErrors = {};
+
+    SECTIONS.forEach(({ id }, index) => {
+      const result = results[index];
+
+      if (result.status === "fulfilled") {
+        loadedQuests[id] = result.value;
+      } else {
+        console.error(`Failed to load ${id} quests:`, result.reason);
+        nextErrors[id] = "Could not load quests. Pull down to try again.";
+      }
+    });
+
+    setQuests((previous) => ({ ...previous, ...loadedQuests }));
+    setErrors(nextErrors);
+    setIsLoading(false);
+    setIsRefreshing(false);
   }, []);
 
-  useEffect(() => {
-    loadQuests();
-  }, [loadQuests]);
+  useFocusEffect(
+    useCallback(() => {
+      setIsRefreshing(false);
+      loadQuests();
 
-  function refreshHandler() {
+      return () => {
+        requestId.current += 1;
+      };
+    }, [loadQuests]),
+  );
+
+  const isDaily = activeSection.id === "daily";
+  const isFinished = activeSection.id === "finished";
+  const pendingDaily = quests.daily.filter((quest) => !quest.completed_at);
+  const completedToday = quests.daily.length - pendingDaily.length;
+  const visibleQuests = isDaily ? pendingDaily : quests[activeSection.id];
+  const errorMessage = errors[activeSection.id];
+
+  function handleRefresh() {
     setIsRefreshing(true);
     loadQuests();
   }
 
+  function handleCreateQuest() {
+    setActiveSection(SECTIONS[1]);
+    navigation.navigate("CreateQuest");
+  }
+
+  function openQuest(quest) {
+    navigation.navigate("QuestDetails", {
+      questId: quest.quest_id ?? quest.id,
+      questDate: quest.quest_date,
+      title: quest.title,
+    });
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <Text style={styles.title}>Quests</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Quests</Text>
 
-      {isLoading && <Text style={styles.message}>Loading quests...</Text>}
+        <Pressable
+          accessibilityRole="button"
+          onPress={handleCreateQuest}
+          style={({ pressed }) => [
+            styles.createButton,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Text style={styles.createLabel}>＋ Create Quest</Text>
+        </Pressable>
+      </View>
 
-      {errorMessage !== "" && (
-        <Text style={styles.message}>{errorMessage}</Text>
-      )}
+      <QuestTabs
+        sections={SECTIONS}
+        activeSectionId={activeSection.id}
+        onSelect={setActiveSection}
+      />
 
-      {!isLoading && (
-        <FlatList
-          data={quests}
-          keyExtractor={(quest) => quest.quest_id}
-          refreshing={isRefreshing}
-          onRefresh={refreshHandler}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            errorMessage ? null : (
-              <Text style={styles.message}>No quests available yet.</Text>
-            )
-          }
-          renderItem={({ item }) => (
-            <AppButton
-              title={item.title}
-              variant="secondary"
-              onPress={() =>
-                navigation.navigate("QuestDetails", {
-                  questId: item.quest_id,
-                  questDate: item.quest_date,
-                  title: item.title,
-                })
-              }
-            />
-          )}
-        />
-      )}
+      <FlatList
+        key={activeSection.id}
+        data={isLoading ? [] : visibleQuests}
+        keyExtractor={(quest) =>
+          quest.quest_id ? `${quest.quest_date}-${quest.quest_id}` : quest.id
+        }
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        contentContainerStyle={styles.list}
+        ListHeaderComponent={
+          <>
+            {isDaily && quests.daily.length > 0 && (
+              <Text style={styles.message}>
+                {completedToday} / {quests.daily.length} completed
+              </Text>
+            )}
+            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+          </>
+        }
+        ListEmptyComponent={
+          errorMessage ? null : (
+            <Text style={styles.message}>
+              {isLoading ? "Loading quests..." : activeSection.empty}
+            </Text>
+          )
+        }
+        renderItem={({ item }) => (
+          <QuestCard
+            quest={item}
+            showCompletion={isFinished}
+            onPress={() => openQuest(item)}
+          />
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -80,20 +165,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#12121F",
-    padding: 24,
+    paddingHorizontal: 20,
+  },
+  header: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    marginTop: 20,
+    marginBottom: 20,
   },
   title: {
-    color: "#A78BFA",
+    color: "#F3F0FF",
     fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontWeight: "700",
   },
-  message: {
-    color: "#D1D5DB",
-    fontSize: 16,
+  createButton: {
+    justifyContent: "center",
+    minHeight: 44,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "#A78BFA",
+  },
+  createLabel: {
+    color: "#171125",
+    fontSize: 14,
+    fontWeight: "700",
   },
   list: {
     flexGrow: 1,
-    gap: 12,
+    paddingTop: 16,
+    paddingBottom: 24,
+    gap: 10,
+  },
+  message: {
+    color: "#B6AEC8",
+    fontSize: 14,
+  },
+  error: {
+    color: "#FDA4AF",
+    fontSize: 14,
+  },
+  pressed: {
+    opacity: 0.8,
   },
 });
