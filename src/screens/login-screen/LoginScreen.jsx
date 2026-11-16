@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
+import { login } from "../../api/auth/login/login";
 import AppButton from "../../components/app-button/AppButton";
 import AppInput from "../../components/app-input/AppInput";
-import AuthLayout from "../../components/auth-layout/AuthLayout";
-import { supabase } from "../../lib/supabase";
+import AuthLayout from "../../layouts/auth-layout/AuthLayout";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }) {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await login({
         email: trimmedEmail,
         password,
       });

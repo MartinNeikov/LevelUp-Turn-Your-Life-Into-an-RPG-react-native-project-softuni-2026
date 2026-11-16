@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { logout } from "../../api/auth/logout/logout";
 import AppButton from "../../components/app-button/AppButton";
-import { supabase } from "../../lib/supabase";
 
 export default function ProfileScreen({ navigation }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  async function handleLogout() {
+  async function logoutHandler() {
     if (isLoggingOut) {
       return;
     }
@@ -16,7 +16,7 @@ export default function ProfileScreen({ navigation }) {
     setIsLoggingOut(true);
 
     try {
-      const { error } = await supabase.auth.signOut({ scope: "local" });
+      const { error } = await logout();
 
       if (error) {
         Alert.alert("Logout failed", error.message);
@@ -42,7 +42,7 @@ export default function ProfileScreen({ navigation }) {
         <AppButton
           title={isLoggingOut ? "Logging out..." : "Logout"}
           variant="secondary"
-          onPress={handleLogout}
+          onPress={logoutHandler}
           disabled={isLoggingOut}
         />
       </View>

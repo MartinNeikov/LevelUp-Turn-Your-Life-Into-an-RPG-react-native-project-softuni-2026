@@ -3,8 +3,11 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 
 import AppButton from "../../components/app-button/AppButton";
 import AppInput from "../../components/app-input/AppInput";
-import AuthLayout from "../../components/auth-layout/AuthLayout";
-import { supabase } from "../../lib/supabase";
+import AuthLayout from "../../layouts/auth-layout/AuthLayout";
+
+import { register } from "../../api/auth/register/register";
+import { logout } from "../../api/auth/logout/logout";
+import { validateRegistration } from "../../validation/registerValidation";
 
 export default function RegisterScreen({ navigation }) {
   const [displayName, setDisplayName] = useState("");
@@ -13,7 +16,7 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleRegister() {
+  async function registerHandler() {
     if (isSubmitting) {
       return;
     }
@@ -21,30 +24,25 @@ export default function RegisterScreen({ navigation }) {
     const trimmedName = displayName.trim();
     const trimmedEmail = email.trim();
 
-    if (!trimmedName || !trimmedEmail || !password || !confirmPassword) {
-      Alert.alert("Missing information", "Please fill in all fields.");
-      return;
-    }
+    const validationError = validateRegistration({
+      displayName: trimmedName,
+      email: trimmedEmail,
+      password,
+      confirmPassword,
+    });
 
-    if (password !== confirmPassword) {
-      Alert.alert(
-        "Passwords do not match",
-        "Please enter the same password twice.",
-      );
+    if (validationError) {
+      Alert.alert(validationError.title, validationError.message);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await register({
+        displayName: trimmedName,
         email: trimmedEmail,
         password,
-        options: {
-          data: {
-            display_name: trimmedName,
-          },
-        },
       });
 
       if (error) {
@@ -53,9 +51,7 @@ export default function RegisterScreen({ navigation }) {
       }
 
       if (data.session) {
-        const { error: signOutError } = await supabase.auth.signOut({
-          scope: "local",
-        });
+        const { error: signOutError } = await logout();
 
         if (signOutError) {
           Alert.alert(
@@ -128,7 +124,7 @@ export default function RegisterScreen({ navigation }) {
       <View style={styles.actions}>
         <AppButton
           title={isSubmitting ? "Creating account..." : "Create Account"}
-          onPress={handleRegister}
+          onPress={registerHandler}
           disabled={isSubmitting}
         />
       </View>

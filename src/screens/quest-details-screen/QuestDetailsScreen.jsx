@@ -54,7 +54,7 @@ export default function QuestDetailsScreen({ route }) {
       isActive = false;
     };
   }, [questId, questDate]);
-  async function handleCompleteQuest() {
+  async function completeQuestHandler() {
     if (!dailyQuest || dailyQuest.completed_at || isCompleting) {
       return;
     }
@@ -114,7 +114,7 @@ export default function QuestDetailsScreen({ route }) {
               quest.target_value == null ? (
               <AppButton
                 title={isCompleting ? "Completing..." : "Complete Quest"}
-                onPress={handleCompleteQuest}
+                onPress={completeQuestHandler}
                 disabled={isCompleting}
               />
             ) : null}

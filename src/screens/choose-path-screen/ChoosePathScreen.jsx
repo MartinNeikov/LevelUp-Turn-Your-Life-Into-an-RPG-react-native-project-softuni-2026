@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Alert, StyleSheet, Text } from "react-native";
 
-import AuthLayout from "../../components/auth-layout/AuthLayout";
-import AttributeCard from "../../components/attribute-card/AttributeCard";
+import { saveFocusAttributes } from "../../api/auth/saveFocusAttributes";
 import AppButton from "../../components/app-button/AppButton";
-import { supabase } from "../../lib/supabase";
+import AttributeCard from "../../components/attribute-card/AttributeCard";
+import AuthLayout from "../../layouts/auth-layout/AuthLayout";
 
 export default function ChoosePathScreen({ navigation }) {
   const [isStrengthFocused, setIsStrengthFocused] = useState(false);
@@ -29,7 +29,7 @@ export default function ChoosePathScreen({ navigation }) {
   const selectedCount = selectedAttributes.length;
   const canContinue = selectedCount >= 2 && selectedCount <= 3;
 
-  async function handleContinue() {
+  async function continueHandler() {
     if (!canContinue || isSaving) {
       return;
     }
@@ -37,11 +37,7 @@ export default function ChoosePathScreen({ navigation }) {
     setIsSaving(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          focus_attributes: selectedAttributes,
-        },
-      });
+      const { error } = await saveFocusAttributes(selectedAttributes);
 
       if (error) {
         Alert.alert("Could not save your choices", error.message);
@@ -121,7 +117,7 @@ export default function ChoosePathScreen({ navigation }) {
       <AppButton
         title={isSaving ? "Saving..." : "Continue"}
         disabled={!canContinue || isSaving}
-        onPress={handleContinue}
+        onPress={continueHandler}
       />
     </AuthLayout>
   );
