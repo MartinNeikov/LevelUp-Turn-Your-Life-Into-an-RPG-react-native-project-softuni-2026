@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 
+import { theme } from "../../theme/theme"
+
 export default function AppButton({
   title,
   onPress,
@@ -11,14 +13,15 @@ export default function AppButton({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       disabled={disabled}
+      onPress={onPress}
       style={({ pressed }) => [
         styles.button,
         isSecondary ? styles.secondaryButton : styles.primaryButton,
         pressed && styles.buttonPressed,
         disabled && styles.buttonDisabled,
       ]}
-      onPress={onPress}
     >
       <Text
         style={[
@@ -36,27 +39,27 @@ const styles = StyleSheet.create({
   button: {
     minHeight: 52,
     paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.radius.md,
     alignItems: "center",
     justifyContent: "center",
   },
   primaryButton: {
-    backgroundColor: "#A78BFA",
+    backgroundColor: theme.colors.primary,
   },
   secondaryButton: {
     borderWidth: 1,
-    borderColor: "#A78BFA",
+    borderColor: theme.colors.primary,
   },
   text: {
-    fontSize: 16,
+    fontSize: theme.fontSize.body,
     fontWeight: "bold",
   },
   primaryText: {
-    color: "#12121F",
+    color: theme.colors.onPrimary,
   },
   secondaryText: {
-    color: "#A78BFA",
+    color: theme.colors.primary,
   },
   buttonPressed: {
     opacity: 0.7,

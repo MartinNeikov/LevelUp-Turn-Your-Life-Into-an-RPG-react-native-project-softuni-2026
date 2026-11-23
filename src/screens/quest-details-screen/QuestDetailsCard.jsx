@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import AppButton from "../../components/app-button/AppButton";
+import { theme } from "../../theme/theme";
 
 function formatTarget(targetType, targetValue) {
   if (targetType === "duration") {
@@ -99,57 +100,57 @@ export default function QuestDetailsCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#1E1E30",
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: "#35354D",
-    borderRadius: 20,
+    borderColor: theme.colors.cardBorder,
+    borderRadius: theme.radius.xl,
     padding: 20,
-    gap: 16,
+    gap: theme.spacing.lg,
   },
   title: {
-    color: "#A78BFA",
-    fontSize: 32,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.title,
     fontWeight: "bold",
   },
   description: {
-    color: "#D1D5DB",
-    fontSize: 16,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
   },
   goalCard: {
-    backgroundColor: "#12121F",
-    borderRadius: 12,
-    padding: 16,
-    gap: 4,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.lg,
+    gap: theme.spacing.xs,
   },
   goalLabel: {
-    color: "#9CA3AF",
-    fontSize: 14,
+    color: theme.colors.textMuted,
+    fontSize: theme.fontSize.small,
   },
   goalValue: {
-    color: "#F3F0FF",
+    color: theme.colors.textBright,
     fontSize: 28,
     fontWeight: "700",
   },
   badges: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: theme.spacing.sm,
   },
   badge: {
-    backgroundColor: "#302449",
-    color: "#C4B5FD",
-    borderRadius: 16,
-    paddingHorizontal: 12,
+    backgroundColor: theme.colors.badgeBackground,
+    color: theme.colors.badgeText,
+    borderRadius: theme.radius.lg,
+    paddingHorizontal: theme.spacing.md,
     paddingVertical: 6,
     fontWeight: "600",
   },
   xpBadge: {
-    backgroundColor: "#3A2D1C",
-    color: "#FCD34D",
+    backgroundColor: theme.colors.xpBadgeBackground,
+    color: theme.colors.xp,
   },
   completed: {
-    color: "#86EFAC",
-    fontSize: 16,
+    color: theme.colors.success,
+    fontSize: theme.fontSize.body,
     fontWeight: "700",
   },
 });

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 import { login } from "../../api/auth/login/login";
 import AppButton from "../../components/app-button/AppButton";
 import AppInput from "../../components/app-input/AppInput";
 import AuthLayout from "../../layouts/auth-layout/AuthLayout";
+import { commonStyles } from "../../theme/commonStyles";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -61,8 +62,11 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <AuthLayout>
-      <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>Log in to continue your adventure.</Text>
+      <Text style={commonStyles.formTitle}>Welcome back</Text>
+
+      <Text style={commonStyles.formSubtitle}>
+        Log in to continue your adventure.
+      </Text>
 
       <AppInput
         label="Email"
@@ -84,7 +88,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
       />
 
-      <View style={styles.actions}>
+      <View style={commonStyles.formActions}>
         <AppButton
           title={isSubmitting ? "Logging in..." : "Login"}
           onPress={loginHandler}
@@ -95,22 +99,3 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    color: "#A78BFA",
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  subtitle: {
-    color: "#9CA3AF",
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
-    marginTop: 12,
-    marginBottom: 32,
-  },
-  actions: {
-    marginTop: 12,
-  },
-});

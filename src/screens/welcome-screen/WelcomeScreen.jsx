@@ -1,10 +1,12 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "../../components/app-button/AppButton";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 export default function WelcomeScreen({ navigation }) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[commonStyles.screen, styles.container]}>
       <Text style={styles.title}>LevelUp</Text>
       <Text style={styles.subtitle}>Turn Your Life Into an RPG</Text>
 
@@ -30,35 +32,33 @@ export default function WelcomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#12121F",
     alignItems: "center",
     justifyContent: "center",
-    padding: 24,
+    padding: theme.spacing.xl,
   },
   title: {
-    color: "#A78BFA",
-    fontSize: 42,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.brand,
     fontWeight: "bold",
   },
   subtitle: {
-    color: "#D1D5DB",
-    fontSize: 18,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.subtitle,
     textAlign: "center",
-    marginTop: 12,
+    marginTop: theme.spacing.md,
   },
   description: {
-    color: "#9CA3AF",
-    fontSize: 16,
+    color: theme.colors.textMuted,
+    fontSize: theme.fontSize.body,
     textAlign: "center",
     lineHeight: 24,
-    marginTop: 24,
+    marginTop: theme.spacing.xl,
     maxWidth: 320,
   },
   actions: {
     width: "100%",
     maxWidth: 320,
-    marginTop: 32,
-    gap: 12,
+    marginTop: theme.spacing.xxl,
+    gap: theme.spacing.md,
   },
 });

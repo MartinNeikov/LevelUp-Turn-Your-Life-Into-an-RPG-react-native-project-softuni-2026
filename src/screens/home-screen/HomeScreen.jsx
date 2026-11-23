@@ -6,6 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
 import { getPlayerProgress } from "../../services/playerProgressService";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 const XP_PER_LEVEL = 100;
 
@@ -52,7 +54,7 @@ export default function HomeScreen({ route }) {
     .getPublicUrl(`level-${avatarLevel}.png`);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[commonStyles.screen, styles.container]}>
       <Text style={styles.title}>Your Adventure</Text>
 
       <View style={styles.xpSection}>
@@ -108,84 +110,82 @@ export default function HomeScreen({ route }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#12121F",
-    padding: 24,
+    padding: theme.spacing.xl,
   },
   title: {
-    color: "#A78BFA",
-    fontSize: 32,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.title,
     fontWeight: "bold",
   },
   xpSection: {
-    marginTop: 16,
-    gap: 8,
+    marginTop: theme.spacing.lg,
+    gap: theme.spacing.sm,
   },
   xpHeader: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 8,
+    gap: theme.spacing.sm,
   },
   levelText: {
-    color: "#A78BFA",
+    color: theme.colors.primary,
     fontSize: 20,
     fontWeight: "700",
   },
   xpText: {
-    color: "#FCD34D",
-    fontSize: 16,
+    color: theme.colors.xp,
+    fontSize: theme.fontSize.body,
     fontWeight: "700",
   },
   xpTrack: {
     height: 12,
-    backgroundColor: "#35354D",
-    borderRadius: 6,
+    backgroundColor: theme.colors.cardBorder,
+    borderRadius: theme.radius.sm,
     overflow: "hidden",
   },
   xpFill: {
     height: "100%",
-    backgroundColor: "#A78BFA",
+    backgroundColor: theme.colors.primary,
   },
   xpCaption: {
-    color: "#D1D5DB",
-    fontSize: 14,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.small,
     textAlign: "right",
   },
   focusSection: {
     marginTop: 20,
   },
   focusLabel: {
-    color: "#D1D5DB",
-    fontSize: 16,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
     fontWeight: "600",
     marginBottom: 10,
   },
   focusList: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: theme.spacing.sm,
   },
   focusBadge: {
-    backgroundColor: "#251D3A",
+    backgroundColor: theme.colors.focusBackground,
     borderWidth: 1,
-    borderColor: "#57447A",
-    borderRadius: 16,
-    paddingHorizontal: 12,
+    borderColor: theme.colors.focusBorder,
+    borderRadius: theme.radius.lg,
+    paddingHorizontal: theme.spacing.md,
     paddingVertical: 6,
   },
   focusBadgeText: {
-    color: "#C4B5FD",
-    fontSize: 14,
+    color: theme.colors.badgeText,
+    fontSize: theme.fontSize.small,
     fontWeight: "600",
   },
   avatar: {
-  width: "100%",
-  maxWidth: 240,
-  aspectRatio: 1,
-  alignSelf: "center",
-  borderRadius: 16,
-  marginBottom: 8,
-},
+    width: "100%",
+    maxWidth: 240,
+    aspectRatio: 1,
+    alignSelf: "center",
+    borderRadius: theme.radius.lg,
+    marginBottom: theme.spacing.sm,
+  },
 });

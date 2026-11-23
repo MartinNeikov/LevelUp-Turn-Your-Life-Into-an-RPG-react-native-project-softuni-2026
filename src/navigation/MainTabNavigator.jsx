@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/home-screen/HomeScreen";
 import QuestsScreen from "../screens/quests-screen/QuestsScreen";
 import ProfileScreen from "../screens/profile-screen/ProfileScreen";
+import { theme } from "../theme/theme";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -14,11 +15,11 @@ export default function MainTabNavigator({ route }) {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#12121F",
-          borderTopColor: "#45455E",
+          backgroundColor: theme.colors.background,
+          borderTopColor: theme.colors.border,
         },
-        tabBarActiveTintColor: "#A78BFA",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textMuted,
       }}
     >
       <Tab.Screen

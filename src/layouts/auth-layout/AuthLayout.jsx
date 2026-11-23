@@ -7,6 +7,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { theme } from "../../theme/theme";
+
 export default function AuthLayout({ children }) {
   return (
     <SafeAreaView style={styles.container}>
@@ -18,9 +20,7 @@ export default function AuthLayout({ children }) {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.form}>
-            {children}
-          </View>
+          <View style={styles.form}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#12121F",
+    backgroundColor: theme.colors.background,
   },
   keyboardContainer: {
     flex: 1,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: theme.spacing.xl,
   },
   form: {
     width: "100%",

@@ -1,5 +1,7 @@
 import { StyleSheet, Switch, Text, View } from "react-native";
 
+import { theme } from "../../theme/theme";
+
 export default function AttributeCard({
   title,
   description,
@@ -18,8 +20,11 @@ export default function AttributeCard({
         value={value}
         onValueChange={onValueChange}
         disabled={disabled}
-        trackColor={{ false: "#45455E", true: "#A78BFA" }}
-        thumbColor="#FFFFFF"
+        trackColor={{
+          false: theme.colors.border,
+          true: theme.colors.primary,
+        }}
+        thumbColor={theme.colors.inputText}
         accessibilityLabel={`Focus on ${title}`}
       />
     </View>
@@ -28,27 +33,27 @@ export default function AttributeCard({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
-    backgroundColor: "#1E1E30",
+    marginBottom: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: "#45455E",
-    borderRadius: 12,
-    padding: 16,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.lg,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: theme.spacing.md,
   },
   info: {
     flex: 1,
   },
   title: {
-    color: "#D1D5DB",
-    fontSize: 18,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.subtitle,
     fontWeight: "bold",
   },
   description: {
-    color: "#9CA3AF",
-    fontSize: 14,
+    color: theme.colors.textMuted,
+    fontSize: theme.fontSize.small,
     lineHeight: 20,
     marginTop: 6,
   },

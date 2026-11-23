@@ -1,12 +1,14 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
+import { theme } from "../../theme/theme.js";
+
 export default function AppInput({ label, ...inputProps }) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
 
       <TextInput
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={theme.colors.textMuted}
         {...inputProps}
         style={styles.input}
       />
@@ -19,18 +21,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    color: "#D1D5DB",
-    fontSize: 16,
-    marginBottom: 8,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
+    marginBottom: theme.spacing.sm,
   },
   input: {
-    backgroundColor: "#1E1E30",
-    color: "#FFFFFF",
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.inputText,
     borderWidth: 1,
-    borderColor: "#45455E",
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    paddingHorizontal: theme.spacing.lg,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: theme.fontSize.body,
   },
 });

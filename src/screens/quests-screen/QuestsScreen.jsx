@@ -10,10 +10,16 @@ import {
 } from "../../services/questService";
 import QuestCard from "./QuestCard";
 import QuestTabs from "./QuestTabs";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 const SECTIONS = [
   { id: "daily", label: "Daily Quests", empty: "You're all caught up." },
-  { id: "personal", label: "Personal Quests", empty: "No personal quests yet." },
+  {
+    id: "personal",
+    label: "Personal Quests",
+    empty: "No personal quests yet.",
+  },
   {
     id: "finished",
     label: "Finished Quests",
@@ -101,7 +107,10 @@ export default function QuestsScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={[commonStyles.screen, styles.container]}
+      edges={["top", "left", "right"]}
+    >
       <View style={styles.header}>
         <Text style={styles.title}>Quests</Text>
 
@@ -163,8 +172,6 @@ export default function QuestsScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#12121F",
     paddingHorizontal: 20,
   },
   header: {
@@ -172,40 +179,40 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: theme.spacing.md,
     marginTop: 20,
     marginBottom: 20,
   },
   title: {
-    color: "#F3F0FF",
-    fontSize: 32,
+    color: theme.colors.textBright,
+    fontSize: theme.fontSize.title,
     fontWeight: "700",
   },
   createButton: {
     justifyContent: "center",
     minHeight: 44,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    backgroundColor: "#A78BFA",
+    borderRadius: theme.radius.md,
+    paddingHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.primary,
   },
   createLabel: {
-    color: "#171125",
-    fontSize: 14,
+    color: theme.colors.onPrimary,
+    fontSize: theme.fontSize.small,
     fontWeight: "700",
   },
   list: {
     flexGrow: 1,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.xl,
     gap: 10,
   },
   message: {
-    color: "#B6AEC8",
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.small,
   },
   error: {
-    color: "#FDA4AF",
-    fontSize: 14,
+    color: theme.colors.error,
+    fontSize: theme.fontSize.small,
   },
   pressed: {
     opacity: 0.8,

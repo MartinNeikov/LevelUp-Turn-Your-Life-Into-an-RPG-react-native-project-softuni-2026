@@ -9,6 +9,8 @@ import {
   createPersonalQuest,
   updatePersonalQuest,
 } from "../../services/questService";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 const ATTRIBUTES = [
   "Strength",
@@ -53,7 +55,10 @@ export default function CreateQuestScreen({ navigation, route }) {
       }
     } catch (error) {
       if (navigation.isFocused()) {
-        Alert.alert("Could not save quest", error.message || "Please try again.");
+        Alert.alert(
+          "Could not save quest",
+          error.message || "Please try again.",
+        );
       }
     } finally {
       saving.current = false;
@@ -63,7 +68,9 @@ export default function CreateQuestScreen({ navigation, route }) {
 
   return (
     <AuthLayout>
-      <Text style={styles.title}>{isEditing ? "Edit Quest" : "Create Quest"}</Text>
+      <Text style={[commonStyles.formTitle, styles.title]}>
+        {isEditing ? "Edit Quest" : "Create Quest"}
+      </Text>
 
       <AppInput
         label="Title"
@@ -90,7 +97,7 @@ export default function CreateQuestScreen({ navigation, route }) {
           onValueChange={setAttribute}
           enabled={!isSaving}
           style={styles.picker}
-          dropdownIconColor="#A78BFA"
+          dropdownIconColor={theme.colors.primary}
         >
           <Picker.Item label="Choose an attribute" value="" />
           {ATTRIBUTES.map((name) => (
@@ -112,30 +119,26 @@ export default function CreateQuestScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   title: {
-    color: "#A78BFA",
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 24,
+    marginBottom: theme.spacing.xl,
   },
   label: {
-    color: "#D1D5DB",
-    fontSize: 16,
-    marginBottom: 8,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
+    marginBottom: theme.spacing.sm,
   },
   pickerContainer: {
-    backgroundColor: "#1E1E30",
-    borderColor: "#45455E",
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: theme.radius.md,
   },
   picker: {
-    color: "#D1D5DB",
+    color: theme.colors.text,
   },
   reward: {
-    color: "#FCD34D",
-    fontSize: 16,
+    color: theme.colors.xp,
+    fontSize: theme.fontSize.body,
     fontWeight: "700",
-    marginVertical: 16,
+    marginVertical: theme.spacing.lg,
   },
 });

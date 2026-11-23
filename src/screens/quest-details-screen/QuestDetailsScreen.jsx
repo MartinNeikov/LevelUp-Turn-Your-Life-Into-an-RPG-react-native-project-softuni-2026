@@ -3,6 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import QuestDetailsCard from "./QuestDetailsCard";
 import useQuestDetails from "./useQuestDetails";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 export default function QuestDetailsScreen({ route, navigation }) {
   const questId = route.params?.questId;
@@ -55,7 +57,7 @@ export default function QuestDetailsScreen({ route, navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={commonStyles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         {isLoading ? (
           <Text style={styles.message}>Loading quest...</Text>
@@ -81,16 +83,12 @@ export default function QuestDetailsScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#12121F",
-  },
   content: {
-    padding: 24,
-    gap: 12,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.md,
   },
   message: {
-    color: "#D1D5DB",
-    fontSize: 16,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
   },
 });

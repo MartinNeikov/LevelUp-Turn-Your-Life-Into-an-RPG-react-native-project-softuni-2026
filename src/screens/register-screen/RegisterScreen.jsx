@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 import AppButton from "../../components/app-button/AppButton";
 import AppInput from "../../components/app-input/AppInput";
@@ -8,6 +8,7 @@ import AuthLayout from "../../layouts/auth-layout/AuthLayout";
 import { register } from "../../api/auth/register/register";
 import { logout } from "../../api/auth/logout/logout";
 import { validateRegistration } from "../../validation/registerValidation";
+import { commonStyles } from "../../theme/commonStyles";
 
 export default function RegisterScreen({ navigation }) {
   const [displayName, setDisplayName] = useState("");
@@ -79,8 +80,11 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <AuthLayout>
-      <Text style={styles.title}>Create your account</Text>
-      <Text style={styles.subtitle}>Your next adventure starts here.</Text>
+      <Text style={commonStyles.formTitle}>Create your account</Text>
+
+      <Text style={commonStyles.formSubtitle}>
+        Your next adventure starts here.
+      </Text>
 
       <AppInput
         label="Display name"
@@ -121,7 +125,7 @@ export default function RegisterScreen({ navigation }) {
         onChangeText={setConfirmPassword}
       />
 
-      <View style={styles.actions}>
+      <View style={commonStyles.formActions}>
         <AppButton
           title={isSubmitting ? "Creating account..." : "Create Account"}
           onPress={registerHandler}
@@ -132,22 +136,3 @@ export default function RegisterScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    color: "#A78BFA",
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  subtitle: {
-    color: "#9CA3AF",
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
-    marginTop: 12,
-    marginBottom: 32,
-  },
-  actions: {
-    marginTop: 12,
-  },
-});

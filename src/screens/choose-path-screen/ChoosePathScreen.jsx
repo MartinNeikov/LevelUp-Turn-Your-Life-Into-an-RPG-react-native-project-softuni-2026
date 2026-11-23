@@ -5,6 +5,8 @@ import { saveFocusAttributes } from "../../api/auth/saveFocusAttributes";
 import AppButton from "../../components/app-button/AppButton";
 import AttributeCard from "../../components/attribute-card/AttributeCard";
 import AuthLayout from "../../layouts/auth-layout/AuthLayout";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 export default function ChoosePathScreen({ navigation }) {
   const [isStrengthFocused, setIsStrengthFocused] = useState(false);
@@ -57,9 +59,9 @@ export default function ChoosePathScreen({ navigation }) {
 
   return (
     <AuthLayout>
-      <Text style={styles.title}>Choose Your Path</Text>
+      <Text style={commonStyles.formTitle}>Choose Your Path</Text>
 
-      <Text style={styles.description}>
+      <Text style={commonStyles.formSubtitle}>
         Choose 2 or 3 attributes to focus on. All six attributes will grow
         throughout your journey.
       </Text>
@@ -124,24 +126,10 @@ export default function ChoosePathScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    color: "#A78BFA",
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  description: {
-    color: "#9CA3AF",
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
-    marginTop: 12,
-    marginBottom: 32,
-  },
   counter: {
-    color: "#A78BFA",
-    fontSize: 16,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.body,
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: theme.spacing.lg,
   },
 });

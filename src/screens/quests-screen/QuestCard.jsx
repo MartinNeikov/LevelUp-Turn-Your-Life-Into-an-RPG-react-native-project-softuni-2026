@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { theme } from "../../theme/theme";
+
 export default function QuestCard({ quest, showCompletion, onPress }) {
   return (
     <Pressable
@@ -20,7 +22,7 @@ export default function QuestCard({ quest, showCompletion, onPress }) {
       </View>
 
       {quest.xp != null && <Text style={styles.xp}>+{quest.xp} XP</Text>}
-      <Text style={styles.chevron} accessible={false}>›</Text>
+      <Text style={styles.chevron} accessible={false}></Text>
     </Pressable>
   );
 }
@@ -33,34 +35,34 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#373149",
-    backgroundColor: "#1E1E30",
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: theme.colors.surface,
   },
   body: {
     flex: 1,
-    gap: 4,
+    gap: theme.spacing.xs,
   },
   title: {
-    color: "#F3F0FF",
-    fontSize: 16,
+    color: theme.colors.textBright,
+    fontSize: theme.fontSize.body,
     fontWeight: "700",
   },
   attribute: {
-    color: "#C4B5FD",
+    color: theme.colors.badgeText,
     fontSize: 13,
   },
   completed: {
-    color: "#86EFAC",
-    fontSize: 12,
+    color: theme.colors.success,
+    fontSize: theme.fontSize.caption,
   },
   xp: {
-    color: "#FCD34D",
+    color: theme.colors.xp,
     fontSize: 13,
     fontWeight: "700",
   },
   chevron: {
-    color: "#B6AEC8",
-    fontSize: 24,
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.heading,
   },
   pressed: {
     opacity: 0.8,

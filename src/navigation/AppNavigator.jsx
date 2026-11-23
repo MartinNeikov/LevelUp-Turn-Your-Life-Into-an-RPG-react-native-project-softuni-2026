@@ -11,6 +11,7 @@ import ChoosePathScreen from "../screens/choose-path-screen/ChoosePathScreen";
 import QuestDetailsScreen from "../screens/quest-details-screen/QuestDetailsScreen";
 import MainTabNavigator from "./MainTabNavigator";
 import CreateQuestScreen from "../screens/create-quest-screen/CreateQuestScreen";
+import { theme } from "../theme/theme";
 
 const Stack = createStackNavigator();
 
@@ -61,7 +62,7 @@ export default function AppNavigator() {
   if (!startupRoute) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#A78BFA" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
@@ -94,7 +95,7 @@ export default function AppNavigator() {
 const styles = StyleSheet.create({
   loading: {
     flex: 1,
-    backgroundColor: "#12121F",
+    backgroundColor: theme.colors.background,
     alignItems: "center",
     justifyContent: "center",
   },

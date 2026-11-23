@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { logout } from "../../api/auth/logout/logout";
 import AppButton from "../../components/app-button/AppButton";
+import { commonStyles } from "../../theme/commonStyles";
+import { theme } from "../../theme/theme";
 
 export default function ProfileScreen({ navigation }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -35,7 +37,10 @@ export default function ProfileScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={[commonStyles.screen, styles.container]}
+      edges={["top", "left", "right"]}
+    >
       <Text style={styles.title}>Profile</Text>
 
       <View style={styles.actions}>
@@ -52,16 +57,14 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#12121F",
-    padding: 24,
+    padding: theme.spacing.xl,
   },
   title: {
-    color: "#A78BFA",
-    fontSize: 32,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.title,
     fontWeight: "bold",
   },
   actions: {
-    marginTop: 24,
+    marginTop: theme.spacing.xl,
   },
 });
