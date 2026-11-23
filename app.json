@@ -6,10 +6,21 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow LevelUp to count your steps for walking quests."
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

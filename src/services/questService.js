@@ -15,7 +15,7 @@ export async function getQuestById(questId) {
   const { data, error } = await supabase
     .from("quests")
     .select(
-      "id, title, description, attribute, xp, target_type, target_value, owner_id, started_at, completed_at",
+      "id, title, description, attribute, xp, target_type, target_value, owner_id, started_at, completed_at, progress_value",
     )
     .eq("id", questId)
     .single();
@@ -58,7 +58,7 @@ export async function getDailyQuests() {
 export async function getDailyQuestStatus(questId, questDate) {
   const { data, error } = await supabase
     .from("daily_quests")
-    .select("completed_at")
+    .select("started_at, completed_at, progress_value")
     .eq("quest_id", questId)
     .eq("quest_date", questDate)
     .maybeSingle();
@@ -79,7 +79,15 @@ export async function completeDailyQuest(questId, questDate) {
   return data;
 }
 
-export async function createPersonalQuest({ title, description, attribute }) {
+export async function createPersonalQuest({
+  title,
+  description,
+  attribute,
+  targetType = null,
+  targetValue = null,
+}) {
+  validateQuestTarget(targetType, targetValue);
+
   const { data: authData, error: authError } = await supabase.auth.getUser();
 
   if (authError) throw authError;
@@ -96,6 +104,8 @@ export async function createPersonalQuest({ title, description, attribute }) {
     attribute,
     owner_id: user.id,
     xp: 10,
+    target_type: targetType,
+    target_value: targetValue,
   });
 
   if (error) throw error;
@@ -136,7 +146,10 @@ export async function getFinishedQuests() {
     dateParts.map(({ type, value }) => [type, value]),
   );
 
-  const today = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  const today = new Date(
+    Date.UTC(Number(year), Number(month) - 1, Number(day)),
+  );
+
   const firstDay = new Date(today);
   firstDay.setUTCDate(firstDay.getUTCDate() - 6);
 
@@ -182,14 +195,24 @@ export async function completePersonalQuest(questId) {
 
 export async function updatePersonalQuest(
   questId,
-  { title, description, attribute },
+  {
+    title,
+    description,
+    attribute,
+    targetType = null,
+    targetValue = null,
+  },
 ) {
+  validateQuestTarget(targetType, targetValue);
+
   const { data, error } = await supabase
     .from("quests")
     .update({
       title: title.trim(),
       description: description.trim(),
       attribute,
+      target_type: targetType,
+      target_value: targetValue,
     })
     .eq("id", questId)
     .not("owner_id", "is", null)
@@ -220,5 +243,20 @@ export async function deletePersonalQuest(questId) {
 
   if (!data) {
     throw new Error("This quest is no longer available to delete.");
+  }
+}
+
+function validateQuestTarget(targetType, targetValue) {
+  if (targetType === null && targetValue === null) {
+    return;
+  }
+
+  if (
+    targetType !== "steps" ||
+    !Number.isSafeInteger(targetValue) ||
+    targetValue < 1 ||
+    targetValue > 2147483647
+  ) {
+    throw new Error("Enter a valid positive whole number of steps.");
   }
 }

@@ -4,6 +4,10 @@ import AppButton from "../../components/app-button/AppButton";
 import { theme } from "../../theme/theme";
 
 function formatTarget(targetType, targetValue) {
+  if (targetType === "steps") {
+    return `${targetValue} steps`;
+  }
+
   if (targetType === "duration") {
     return targetValue % 60 === 0
       ? `${targetValue / 60} min`
@@ -32,8 +36,12 @@ export default function QuestDetailsCard({
   onDelete,
 }) {
   const target = formatTarget(quest.target_type, quest.target_value);
+  const isStepQuest = quest.target_type === "steps";
   const isCompletedPersonalQuest = Boolean(quest.owner_id && completedAt);
   const isBusy = pendingAction !== null;
+
+  const showCompleteButton =
+    canComplete || (isStepQuest && !canStart && !completedAt);
 
   return (
     <View style={styles.card}>
@@ -51,13 +59,17 @@ export default function QuestDetailsCard({
         <Text style={styles.badge}>{quest.attribute}</Text>
 
         {!isCompletedPersonalQuest && (
-          <Text style={[styles.badge, styles.xpBadge]}>+{quest.xp} XP</Text>
+          <Text style={[styles.badge, styles.xpBadge]}>
+            +{quest.xp} XP
+          </Text>
         )}
       </View>
 
       {completedAt && (
         <Text style={styles.completed}>
-          {isCompletedPersonalQuest ? `Completed · +${quest.xp} XP` : "Completed"}
+          {isCompletedPersonalQuest
+            ? `Completed · +${quest.xp} XP`
+            : "Completed"}
         </Text>
       )}
 
@@ -87,12 +99,24 @@ export default function QuestDetailsCard({
         </>
       )}
 
-      {canComplete && (
-        <AppButton
-          title={pendingAction === "complete" ? "Completing..." : "Complete Quest"}
-          onPress={onComplete}
-          disabled={isBusy}
-        />
+      {showCompleteButton && (
+        <>
+          <AppButton
+            title={
+              pendingAction === "complete"
+                ? "Completing..."
+                : "Complete Quest"
+            }
+            onPress={onComplete}
+            disabled={isBusy || !canComplete}
+          />
+
+          {isStepQuest && !canComplete && (
+            <Text style={styles.hint}>
+              Reach the step goal and save your progress to complete this quest.
+            </Text>
+          )}
+        </>
       )}
     </View>
   );
@@ -115,6 +139,7 @@ const styles = StyleSheet.create({
   description: {
     color: theme.colors.text,
     fontSize: theme.fontSize.body,
+    lineHeight: 24,
   },
   goalCard: {
     backgroundColor: theme.colors.background,
@@ -152,5 +177,10 @@ const styles = StyleSheet.create({
     color: theme.colors.success,
     fontSize: theme.fontSize.body,
     fontWeight: "700",
+  },
+  hint: {
+    color: theme.colors.textMuted,
+    fontSize: theme.fontSize.small,
+    lineHeight: 20,
   },
 });
